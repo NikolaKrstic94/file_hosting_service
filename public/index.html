@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <title>Upload Files</title>
+      <link rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"/>
+      <link rel="stylesheet" href="style.css" />
+      <script type="text/javascript" src="https://livejs.com/live.js"></script>
+   </head>
+
+   <body>
+      <h1>File Hosting Service</h1>
+
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+         <label for="formFileMultiple" class="form-label">
+            Please select file/files to upload
+         </label>
+         <div class="input-group mycustom">
+            <input class="form-control" type="file" name="avatar" multiple />
+
+            <div class="input-group-prepend">
+               <input
+                  type="submit"
+                  value="Upload"
+                  class="btn btn-secondary btn-sm rounded-0"
+                  id="inputGroupPrepend2"
+               />
+            </div>
+         </div>
+         <div class="input-group-prepend"></div>
+         <button type="button" class="btn btn-secondary" id="view-records-btn">
+            <a href="http://localhost:3000/files">View Existing Database Records</a>
+         </button>
+         <label class="imgs-so-far form-label"></label>
+         <div class="files"></div>
+         <label class="files-so-far form-label">There are no files uploaded so far</label>
+
+         <ul class="ul"></ul>
+      </form>
+   </body>
+   <script>
+      const loadFiles = async () => {
+         const response = await fetch('http://localhost:3000/files').then(
+            (response) => response.json()
+         );
+
+         const filesElement = document.querySelector('.files');
+         filesElement.innerHTML = '';
+
+         const ul = document.querySelector('.ul');
+
+         const imgsSoFar = document.querySelector('.imgs-so-far');
+
+         const filesSoFar = document.querySelector('.files-so-far');
+
+         response.files.forEach((file) => {
+            if (file.filePath.includes('.jpg') || file.filePath.includes('.jpeg') || file.filePath.includes('.png')) {
+               const img = document.createElement('img');
+               img.src = file.filePath;
+               img.height = '200';
+               filesElement.appendChild(img);
+            } else {
+               const li = document.createElement('li');
+               li.innerHTML = file.filePath;
+               ul.appendChild(li);
+            }
+         });
+
+         response.files.forEach((file) => {
+            console.log(file.filePath);
+            const hasImageExt = file.filePath.includes('.jpg') || file.filePath.includes('.jpeg') || file.filePath.includes('.png');
+            if (hasImageExt) {
+               imgsSoFar.innerHTML = 'Images you have uploaded so far';
+               filesSoFar.innerHTML = '';
+            }
+            if (!hasImageExt && file.filePath.includes('.')) {
+               filesSoFar.innerHTML = 'Non-image files you have uploaded so far';
+               console.log("hey!");
+            }
+         });
+      };
+      window.onload = loadFiles;
+   </script>
+</html>
+
